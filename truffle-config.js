@@ -1,23 +1,8 @@
+require('dotenv').config();
 const path = require('path');
 const HDWalletProvider = require('truffle-hdwallet-provider');
-const fs = require('fs');
-
-let infuraKey;
-let mnemonic;
-const cliArgs = process.argv;
-
-// only look for '.secret' if deploying to rinkeby
-if (cliArgs.includes('rinkeby')) {
-  infuraKey = 'MY_PROJECT_ID';
-  mnemonic = fs
-    .readFileSync('.secret')
-    .toString()
-    .trim();
-}
 
 module.exports = {
-  // See <http://truffleframework.com/docs/advanced/configuration>
-  // to customize your Truffle configuration!
   contracts_build_directory: path.join(__dirname, 'app/src/contracts'),
   networks: {
     development: {
@@ -28,10 +13,19 @@ module.exports = {
     rinkeby: {
       provider: () =>
         new HDWalletProvider(
-          mnemonic,
-          `https://rinkeby.infura.io/${infuraKey}`
+          process.env.MNEMONIC,
+          `https://rinkeby.infura.io/v3/${process.env.INFURA_KEY}`
         ),
       network_id: 4, // Rinkeby's id
+      gas: 5500000
+    },
+    ropsten: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.MNEMONIC,
+          `https://ropsten.infura.io/v3/${process.env.INFURA_KEY}`
+        ),
+      network_id: 3, // Ropsten's id
       gas: 5500000
     }
   }
